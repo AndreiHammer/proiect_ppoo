@@ -114,13 +114,14 @@ public class CLIView implements View {
             return;
         }
 
-        System.out.printf("%-25s %-10s %-15s %-15s%n",
-                "Product", "Quantity", "Unit Price", "Total");
+        System.out.printf("%-5s %-20s %-10s %-12s %-12s%n",
+                "ID", "Product", "Quantity", "Unit Price", "Total");
         System.out.println("-".repeat(70));
 
         for (OrderItem item : cart.getOrderItems()) {
             double itemTotal = item.getPrice() * item.getPieces();
-            System.out.printf("%-25s %-10d $%-14.2f $%.2f%n",
+            System.out.printf("%-5d %-20s %-10d $%-11.2f $%.2f%n",
+                    item.getProduct().getId(),
                     item.getProduct().getName(),
                     item.getPieces(),
                     item.getPrice(),

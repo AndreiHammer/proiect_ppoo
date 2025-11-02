@@ -12,7 +12,7 @@ public class Cart {
         this.orderItems = new ArrayList<>();
     }
 
-    private Cart(List<OrderItem> orderItems, double price) {
+    public Cart(List<OrderItem> orderItems, double price) {
         this.orderItems = orderItems;
         this.price = price;
     }

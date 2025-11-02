@@ -32,14 +32,12 @@ public class ProductDataStore implements DataStore {
     }
 
     private void associateOrdersWithCustomers() {
-        // Clear existing orders from customers to avoid duplicates
         for (Customer customer : customers) {
             if (customer.getOrders() != null) {
                 customer.getOrders().clear();
             }
         }
-        
-        // Associate loaded orders with customers
+
         for (Order order : orders) {
             customers.stream()
                     .filter(customer -> customer.getId() == order.getCustomerId())
@@ -73,7 +71,6 @@ public class ProductDataStore implements DataStore {
         File ordersFile = new File(ordersFilePath);
         
         if (!ordersFile.exists()) {
-            // File doesn't exist yet, return empty list
             return new ArrayList<>();
         }
         
@@ -83,7 +80,6 @@ public class ProductDataStore implements DataStore {
             }
             return orderReader.read(ordersFilePath);
         } catch (IllegalArgumentException e) {
-            // File is empty, return empty list
             return new ArrayList<>();
         } catch (Exception e) {
             System.err.println("Error loading orders: " + e.getMessage());
@@ -105,7 +101,6 @@ public class ProductDataStore implements DataStore {
         order.setOrderId(nextOrderId);
         orders.add(order);
 
-        // Associate order with customer
         customers.stream()
                 .filter(customer -> customer.getId() == order.getCustomerId())
                 .forEach(customer -> customer.getOrders().add(order));

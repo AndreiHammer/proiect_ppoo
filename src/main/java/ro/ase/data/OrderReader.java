@@ -24,21 +24,18 @@ public class OrderReader extends Reader {
         try {
             lines = readFromFile(path);
         } catch (IllegalArgumentException e) {
-            // File is empty or doesn't exist, return empty list
             return new ArrayList<>();
         }
-        
-        // Group lines by orderId and customerId
+
         Map<String, List<OrderLineData>> groupedOrders = lines.stream()
                 .map(this::parseLine)
                 .collect(Collectors.groupingBy(data -> data.orderId + "_" + data.customerId));
-        
-        // Convert grouped data to Order objects
+
         List<Order> orders = new ArrayList<>();
         for (List<OrderLineData> orderLines : groupedOrders.values()) {
             if (orderLines.isEmpty()) continue;
             
-            OrderLineData firstLine = orderLines.get(0);
+            OrderLineData firstLine = orderLines.getFirst();
             List<OrderItem> orderItems = orderLines.stream()
                     .map(this::createOrderItem)
                     .collect(Collectors.toList());
@@ -70,16 +67,11 @@ public class OrderReader extends Reader {
     }
 
     private OrderItem createOrderItem(OrderLineData data) {
-        Product product = products.stream()
+        return products.stream()
                 .filter(p -> p.getName().equals(data.productName))
                 .findFirst()
-                .orElse(null);
-        
-        if (product == null) {
-            throw new IllegalArgumentException("Product not found: " + data.productName);
-        }
-        
-        return new OrderItem(product, data.pieces, data.itemPrice);
+                .map(product -> new OrderItem(product, data.pieces, data.itemPrice))
+                .orElseThrow(() -> new IllegalArgumentException("Product not found: " + data.productName));
     }
 
     private static class OrderLineData {

@@ -141,6 +141,16 @@ public class App {
     }
 
     private void handleRemoveFromCart() {
+        var cart = storeService.getCart(currentCustomer);
+        
+        if (cart == null || cart.getOrderItems() == null || cart.getOrderItems().isEmpty()) {
+            view.printError("Your cart is empty. Nothing to remove.");
+            return;
+        }
+        
+        view.printMessage("\nCurrent cart contents:");
+        view.printCart(cart);
+        
         int productId = view.readProductId();
         if (productId < 0) {
             view.printError("Invalid product ID.");
@@ -156,6 +166,16 @@ public class App {
     }
 
     private void handleUpdateCartQuantity() {
+        var cart = storeService.getCart(currentCustomer);
+        
+        if (cart == null || cart.getOrderItems() == null || cart.getOrderItems().isEmpty()) {
+            view.printError("Your cart is empty. Nothing to update.");
+            return;
+        }
+        
+        view.printMessage("\nCurrent cart contents:");
+        view.printCart(cart);
+        
         int productId = view.readProductId();
         if (productId < 0) {
             view.printError("Invalid product ID.");
@@ -195,7 +215,7 @@ public class App {
         
         view.printCart(cart);
         view.printMessage("\nPress Enter to confirm checkout...");
-        view.readMenuChoice(); // Read input to pause
+        view.readMenuChoice();
         
         try {
             Order order = storeService.createOrder(currentCustomer);

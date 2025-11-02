@@ -10,9 +10,6 @@ public class Customer extends Credentials {
     private String name;
     private Cart cart;
 
-    public Customer() {
-    }
-
     public Customer(String userName, String password, long id, String name, Cart cart) {
         super(userName, password);
         this.id = id;
