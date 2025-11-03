@@ -1,5 +1,6 @@
 package ro.ase.data;
 
+import ro.ase.model.Cart;
 import ro.ase.model.Customer;
 import ro.ase.model.Order;
 import ro.ase.model.Product;
@@ -7,6 +8,7 @@ import ro.ase.model.Product;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ProductDataStore implements DataStore {
     private List<Customer> customers;
@@ -15,8 +17,10 @@ public class ProductDataStore implements DataStore {
     private final CustomerReader customerReader = new CustomerReader();
     private final ProductReader foodReader = new ProductReader();
     private final OrderWriter orderWriter = new OrderWriter();
+    private final CartWriter cartWriter = new CartWriter();
     private final String inputFolderPath;
     private OrderReader orderReader;
+    private CartReader cartReader;
 
     public ProductDataStore(String inputFolderPath) {
         this.inputFolderPath = inputFolderPath;
@@ -28,7 +32,9 @@ public class ProductDataStore implements DataStore {
         this.products = getProducts();
         this.orderReader = new OrderReader(this.products);
         this.orders = loadOrders();
+        this.cartReader = new CartReader(this.products);
         associateOrdersWithCustomers();
+        loadCarts();
     }
 
     private void associateOrdersWithCustomers() {
@@ -42,6 +48,36 @@ public class ProductDataStore implements DataStore {
             customers.stream()
                     .filter(customer -> customer.getId() == order.getCustomerId())
                     .forEach(customer -> customer.getOrders().add(order));
+        }
+    }
+
+    private void loadCarts() {
+        String cartsFilePath = this.inputFolderPath + "/carts.csv";
+        File cartsFile = new File(cartsFilePath);
+
+        if(!cartsFile.exists()) {
+            return;
+        }
+
+        try {
+            if (cartReader == null) {
+                return;
+            }
+            Map<Long, Cart> cartsByCustomer = cartReader.readByCustomer(cartsFilePath);
+            if (cartsByCustomer.isEmpty()) {
+                return;
+            }
+            for (Customer customer : customers) {
+                Cart cart = cartsByCustomer.get(customer.getId());
+                if (cart != null) {
+                    customer.setCart(cart);
+                }
+            }
+        } catch (IllegalArgumentException ignored) {
+
+        } catch (Exception e) {
+            System.err.println("Error loading carts: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -59,11 +95,6 @@ public class ProductDataStore implements DataStore {
             products = foodReader.read(this.inputFolderPath + "/products.csv");
         }
         return products;
-    }
-
-    @Override
-    public List<Order> getOrders() {
-        return orders;
     }
 
     private List<Order> loadOrders() {
@@ -112,5 +143,10 @@ public class ProductDataStore implements DataStore {
     @Override
     public void writeOrders() {
         orderWriter.writeOrders(orders, inputFolderPath + "/orders.csv");
+    }
+
+    @Override
+    public void writeCarts() {
+        cartWriter.writeCarts(getCustomers(), inputFolderPath + "/carts.csv");
     }
 }

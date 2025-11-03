@@ -72,6 +72,7 @@ public class StoreServiceImpl implements StoreService {
         }
 
         updateCartTotal(cart);
+        dataStore.writeCarts();
     }
 
     @Override
@@ -89,6 +90,7 @@ public class StoreServiceImpl implements StoreService {
         }
 
         updateCartTotal(cart);
+        dataStore.writeCarts();
     }
 
     @Override
@@ -110,6 +112,7 @@ public class StoreServiceImpl implements StoreService {
 
         item.setPieces(quantity);
         updateCartTotal(cart);
+        dataStore.writeCarts();
     }
 
     @Override
@@ -126,6 +129,7 @@ public class StoreServiceImpl implements StoreService {
         if (cart != null) {
             cart.getOrderItems().clear();
             cart.setPrice(0.0);
+            dataStore.writeCarts();
         }
     }
 

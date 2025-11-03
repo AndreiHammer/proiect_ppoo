@@ -11,9 +11,9 @@ public interface DataStore {
 
     List<Product> getProducts();
 
-    List<Order> getOrders();
-
     Order createOrder(Order order);
 
     void writeOrders();
+
+    void writeCarts();
 }

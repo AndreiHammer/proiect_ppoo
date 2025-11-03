@@ -1,4 +1,4 @@
-package ro.ase;
+package ro.ase.controller;
 
 import ro.ase.data.ProductDataStore;
 import ro.ase.model.Credentials;
@@ -23,11 +23,6 @@ public class App {
         this.dataStore = new ProductDataStore(dataPath);
         this.storeService = new StoreServiceImpl(dataStore);
         this.view = new CLIView();
-    }
-
-    public static void main(String[] args) {
-        App app = new App("data");
-        app.run();
     }
 
     public void run() {

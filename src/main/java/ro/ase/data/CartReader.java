@@ -4,13 +4,13 @@ import ro.ase.model.Cart;
 import ro.ase.model.OrderItem;
 import ro.ase.model.Product;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CartReader extends Reader {
-    private List<Product> products;
+    private final List<Product> products;
 
     public CartReader(List<Product> products) {
         this.products = products;
@@ -18,19 +18,22 @@ public class CartReader extends Reader {
 
     @Override
     public List<Cart> read(String path) {
-        List<String> lines;
+        return List.of();
+    }
 
+    public Map<Long, Cart> readByCustomer(String path) {
+        List<String> lines;
         try {
             lines = readFromFile(path);
         } catch (IllegalArgumentException e) {
-            return new ArrayList<>();
+            return new HashMap<>();
         }
 
         Map<String, List<CartLineData>> groupedCarts = lines.stream()
                 .map(this::parseLine)
                 .collect(Collectors.groupingBy(data -> data.customerId));
 
-        List<Cart> carts = new ArrayList<>();
+        Map<Long, Cart> result = new HashMap<>();
         for (Map.Entry<String, List<CartLineData>> entry : groupedCarts.entrySet()) {
             List<CartLineData> cartLines = entry.getValue();
             if(cartLines.isEmpty()) continue;
@@ -47,10 +50,10 @@ public class CartReader extends Reader {
                     .sum();
             cart.setPrice(totalPrice);
 
-            carts.add(cart);
+            result.put(Long.parseLong(entry.getKey()), cart);
         }
 
-        return carts;
+        return result;
     }
 
     private CartLineData parseLine(String line) {
