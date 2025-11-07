@@ -11,9 +11,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Writes orders and their items to a CSV file.
+ */
 public class OrderWriter {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    /**
+     * Writes all orders to the given file path.
+     *
+     * @param orders     list of orders
+     * @param outputFile target CSV path
+     */
     public void writeOrders(List<Order> orders, String outputFile) {
         File file = new File(outputFile);
         try {
@@ -26,6 +35,7 @@ public class OrderWriter {
         }
     }
 
+    /** Serializes all orders. */
     private String addOrders(List<Order> orders) {
         return orders
                 .stream()
@@ -39,6 +49,7 @@ public class OrderWriter {
                 .collect(Collectors.joining("\n"));
     }
 
+    /** Serializes all items for a single order. */
     private String addOrderItems(List<OrderItem> orderItems, double totalPrice, LocalDateTime timestampCreated, Long orderId, long customerId) {
         return orderItems
                 .stream()
@@ -52,6 +63,7 @@ public class OrderWriter {
                 .collect(Collectors.joining("\n"));
     }
 
+    /** Serializes a single order item row. */
     private String addOrderItem(OrderItem orderItem, double totalPrice, LocalDateTime timestampCreated, Long orderId, long customerId) {
         return String.join(
                 ",",

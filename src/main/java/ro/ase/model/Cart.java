@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a shopping cart associated with a customer, containing
+ * a list of {@link OrderItem} entries and the aggregated total price.
+ */
 public class Cart {
+    private Long customerId;
     private List<OrderItem> orderItems;
     private double price;
 
@@ -12,13 +17,14 @@ public class Cart {
         this.orderItems = new ArrayList<>();
     }
 
-    public Cart(List<OrderItem> orderItems, double price) {
+    public Cart(Long customerId, List<OrderItem> orderItems, double price) {
+        this.customerId = customerId;
         this.orderItems = orderItems;
         this.price = price;
     }
 
     public static Cart getEmptyCart() {
-        return new Cart(new ArrayList<>(), 0);
+        return new Cart(0L, new ArrayList<>(), 0);
     }
 
     public List<OrderItem> getOrderItems() {
@@ -37,6 +43,14 @@ public class Cart {
         this.price = price;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -44,18 +58,19 @@ public class Cart {
         if (o == null || getClass() != o.getClass())
             return false;
         Cart cart = (Cart) o;
-        return Objects.equals(orderItems, cart.orderItems) && Objects.equals(price, cart.price);
+        return Objects.equals(customerId, cart.customerId) && Objects.equals(orderItems, cart.orderItems) && Objects.equals(price, cart.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderItems, price);
+        return Objects.hash(customerId, orderItems, price);
     }
 
     @Override
     public String toString() {
         return "Cart{" +
-                "orderItems=" + orderItems +
+                "customerId=" + customerId +
+                ", orderItems=" + orderItems +
                 ", price=" + price +
                 '}';
     }

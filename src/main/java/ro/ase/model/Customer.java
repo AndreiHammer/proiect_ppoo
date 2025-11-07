@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a customer account with credentials, personal details,
+ * a shopping cart and order history.
+ */
 public class Customer extends Credentials {
     private final List<Order> orders = new ArrayList<>();
     private long id;
@@ -70,6 +74,9 @@ public class Customer extends Credentials {
                 '}';
     }
 
+    /**
+     * Builder for {@link Customer}.
+     */
     public static class Builder {
         private String userName;
         private String password;

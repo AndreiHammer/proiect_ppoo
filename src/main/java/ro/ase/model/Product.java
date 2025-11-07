@@ -2,6 +2,9 @@ package ro.ase.model;
 
 import java.util.Objects;
 
+/**
+ * Represents a product that can be purchased, including its type, description, and price.
+ */
 public class Product {
     private int id;
     private String name;
@@ -87,6 +90,9 @@ public class Product {
                 '}';
     }
 
+    /**
+     * Builder for {@link Product} to ease fluent construction.
+     */
     public static class ProductBuilder {
         private int id;
         private String name;

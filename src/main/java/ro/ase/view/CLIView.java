@@ -11,6 +11,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Console-based implementation of {@link View}.
+ */
 public class CLIView implements View {
     private final Scanner scanner;
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

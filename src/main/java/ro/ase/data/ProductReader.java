@@ -6,7 +6,10 @@ import ro.ase.model.ProductType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductReader extends Reader {
+/**
+ * Reads {@link Product} entities from a CSV file.
+ */
+public class ProductReader extends Reader<Product> {
 
     @Override
     public List<Product> read(String path) {
@@ -18,6 +21,7 @@ public class ProductReader extends Reader {
         return products;
     }
 
+    /** Parses a line into a {@link Product}. */
     private Product buildProduct(String line) {
         String[] parts = splitLineByComma(line);
         return new Product.ProductBuilder()

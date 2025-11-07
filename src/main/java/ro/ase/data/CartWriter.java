@@ -10,8 +10,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Writes carts to a CSV file.
+ */
 public class CartWriter {
 
+    /**
+     * Writes all non-empty carts of the given customers to the output file.
+     *
+     * @param customers  customers containing carts
+     * @param outputFile target CSV path
+     */
     public void writeCarts(List<Customer> customers, String outputFile) {
         File file = new File(outputFile);
         try {
@@ -32,6 +41,7 @@ public class CartWriter {
         }
     }
 
+    /** Serializes all items of a cart for a single customer. */
     private String addCartItems(Cart cart, long customerId) {
         if (cart == null || cart.getOrderItems() == null || cart.getOrderItems().isEmpty()) {
             return "";
@@ -42,6 +52,7 @@ public class CartWriter {
                 .collect(Collectors.joining("\n"));
     }
 
+    /** Serializes a single cart item. */
     private String addCartItem(OrderItem orderItem, long customerId) {
         return String.join(
                 ",",

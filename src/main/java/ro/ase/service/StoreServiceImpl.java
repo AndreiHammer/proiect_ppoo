@@ -11,6 +11,9 @@ import ro.ase.model.OrderItem;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Default implementation of {@link StoreService} backed by a {@link ro.ase.data.DataStore}.
+ */
 public class StoreServiceImpl implements StoreService {
     private final DataStore dataStore;
 
@@ -163,9 +166,6 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public List<Product> searchProducts(String searchTerm) {
-        if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            return listAllProducts();
-        }
 
         String lowerSearchTerm = searchTerm.toLowerCase().trim();
         

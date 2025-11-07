@@ -4,12 +4,14 @@ import ro.ase.model.Cart;
 import ro.ase.model.OrderItem;
 import ro.ase.model.Product;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CartReader extends Reader {
+/**
+ * Reads {@link ro.ase.model.Cart} entities from a CSV file.
+ */
+public class CartReader extends Reader<Cart> {
     private final List<Product> products;
 
     public CartReader(List<Product> products) {
@@ -18,44 +20,39 @@ public class CartReader extends Reader {
 
     @Override
     public List<Cart> read(String path) {
-        return List.of();
-    }
-
-    public Map<Long, Cart> readByCustomer(String path) {
         List<String> lines;
         try {
             lines = readFromFile(path);
         } catch (IllegalArgumentException e) {
-            return new HashMap<>();
+            return List.of();
         }
 
         Map<String, List<CartLineData>> groupedCarts = lines.stream()
                 .map(this::parseLine)
                 .collect(Collectors.groupingBy(data -> data.customerId));
 
-        Map<Long, Cart> result = new HashMap<>();
-        for (Map.Entry<String, List<CartLineData>> entry : groupedCarts.entrySet()) {
-            List<CartLineData> cartLines = entry.getValue();
-            if(cartLines.isEmpty()) continue;
+        return groupedCarts.entrySet().stream()
+                .filter(entry -> !entry.getValue().isEmpty())
+                .map(entry -> {
+                    List<OrderItem> orderItems = entry.getValue().stream()
+                            .map(this::createOrderItem)
+                            .collect(Collectors.toList());
 
-            List<OrderItem> orderItems = cartLines.stream()
-                    .map(this::createOrderItem)
-                    .collect(Collectors.toList());
+                    Cart cart = new Cart();
+                    cart.setCustomerId(Long.parseLong(entry.getKey()));
+                    cart.setOrderItems(orderItems);
 
-            Cart cart = new Cart();
-            cart.setOrderItems(orderItems);
+                    double totalPrice = orderItems.stream()
+                            .mapToDouble(item -> item.getPrice() * item.getPieces())
+                            .sum();
+                    cart.setPrice(totalPrice);
 
-            double totalPrice = orderItems.stream()
-                    .mapToDouble(item -> item.getPrice() * item.getPieces())
-                    .sum();
-            cart.setPrice(totalPrice);
-
-            result.put(Long.parseLong(entry.getKey()), cart);
-        }
-
-        return result;
+                    return cart;
+                })
+                .collect(Collectors.toList());
     }
 
+    /** Parses a single CSV line describing a cart item row. */
     private CartLineData parseLine(String line) {
         String[] parts = splitLineByComma(line);
         CartLineData cartLineData = new CartLineData();
@@ -66,6 +63,7 @@ public class CartReader extends Reader {
         return cartLineData;
     }
 
+    /** Creates an {@link OrderItem} resolved from the product catalog. */
     private OrderItem createOrderItem(CartLineData data) {
         return products.stream()
                 .filter(p -> p.getName().equals(data.productName))
@@ -74,6 +72,7 @@ public class CartReader extends Reader {
                 .orElseThrow(() -> new IllegalArgumentException("Product not found: " + data.productName));
     }
 
+    /** Internal structure holding parsed cart line data. */
     private static class CartLineData {
         String customerId;
         String productName;

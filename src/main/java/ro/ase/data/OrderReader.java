@@ -9,7 +9,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class OrderReader extends Reader {
+/**
+ * Reads {@link ro.ase.model.Order} entities with their items from a CSV file.
+ */
+public class OrderReader extends Reader<Order> {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private final List<Product> products;
 
@@ -53,6 +56,7 @@ public class OrderReader extends Reader {
         return orders;
     }
 
+    /** Parses a single CSV line describing an order item row. */
     private OrderLineData parseLine(String line) {
         String[] parts = splitLineByComma(line);
         OrderLineData data = new OrderLineData();
@@ -66,6 +70,7 @@ public class OrderReader extends Reader {
         return data;
     }
 
+    /** Creates an {@link OrderItem} resolved from the product catalog. */
     private OrderItem createOrderItem(OrderLineData data) {
         return products.stream()
                 .filter(p -> p.getName().equals(data.productName))
@@ -74,6 +79,7 @@ public class OrderReader extends Reader {
                 .orElseThrow(() -> new IllegalArgumentException("Product not found: " + data.productName));
     }
 
+    /** Internal structure holding parsed line data. */
     private static class OrderLineData {
         String orderId;
         String customerId;

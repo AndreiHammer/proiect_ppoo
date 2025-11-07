@@ -6,7 +6,10 @@ import ro.ase.model.Customer;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CustomerReader extends Reader {
+/**
+ * Reads {@link Customer} entities from a CSV file.
+ */
+public class CustomerReader extends Reader<Customer> {
 
     @Override
     public List<Customer> read(String path) {
@@ -16,6 +19,7 @@ public class CustomerReader extends Reader {
                 .collect(Collectors.toList());
     }
 
+    /** Parses a line into a {@link Customer}. */
     private Customer buildCustomer(String line) {
         String[] parts = splitLineByComma(line);
         long customerId = Long.parseLong(parts[2]);

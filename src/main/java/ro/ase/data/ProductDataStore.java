@@ -7,15 +7,20 @@ import ro.ase.model.Product;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * File-based implementation of {@link DataStore} that reads and writes
+ * CSV files for products, customers, orders and carts.
+ */
 public class ProductDataStore implements DataStore {
     private List<Customer> customers;
     private List<Product> products;
     private List<Order> orders;
     private final CustomerReader customerReader = new CustomerReader();
-    private final ProductReader foodReader = new ProductReader();
+    private final ProductReader productReader = new ProductReader();
     private final OrderWriter orderWriter = new OrderWriter();
     private final CartWriter cartWriter = new CartWriter();
     private final String inputFolderPath;
@@ -27,6 +32,9 @@ public class ProductDataStore implements DataStore {
         this.orders = new ArrayList<>();
     }
 
+    /**
+     * Initializes in-memory state by loading customers, products, orders and carts.
+     */
     public void init() {
         this.customers = getCustomers();
         this.products = getProducts();
@@ -37,6 +45,9 @@ public class ProductDataStore implements DataStore {
         loadCarts();
     }
 
+    /**
+     * Rebuilds the relation between customers and their orders.
+     */
     private void associateOrdersWithCustomers() {
         for (Customer customer : customers) {
             if (customer.getOrders() != null) {
@@ -51,6 +62,9 @@ public class ProductDataStore implements DataStore {
         }
     }
 
+    /**
+     * Loads carts from disk and associates them with customers.
+     */
     private void loadCarts() {
         String cartsFilePath = this.inputFolderPath + "/carts.csv";
         File cartsFile = new File(cartsFilePath);
@@ -63,9 +77,15 @@ public class ProductDataStore implements DataStore {
             if (cartReader == null) {
                 return;
             }
-            Map<Long, Cart> cartsByCustomer = cartReader.readByCustomer(cartsFilePath);
-            if (cartsByCustomer.isEmpty()) {
+            List<Cart> carts = cartReader.read(cartsFilePath);
+            if (carts.isEmpty()) {
                 return;
+            }
+            Map<Long, Cart> cartsByCustomer = new HashMap<>();
+            for (Cart cart : carts) {
+                if (cart.getCustomerId() != null) {
+                    cartsByCustomer.put(cart.getCustomerId(), cart);
+                }
             }
             for (Customer customer : customers) {
                 Cart cart = cartsByCustomer.get(customer.getId());
@@ -92,11 +112,14 @@ public class ProductDataStore implements DataStore {
     @Override
     public List<Product> getProducts() {
         if (products == null) {
-            products = foodReader.read(this.inputFolderPath + "/products.csv");
+            products = productReader.read(this.inputFolderPath + "/products.csv");
         }
         return products;
     }
 
+    /**
+     * Loads orders from disk.
+     */
     private List<Order> loadOrders() {
         String ordersFilePath = inputFolderPath + "/orders.csv";
         File ordersFile = new File(ordersFilePath);

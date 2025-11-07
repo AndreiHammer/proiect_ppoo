@@ -2,6 +2,9 @@ package ro.ase.model;
 
 import java.util.Objects;
 
+/**
+ * Holds simple username/password credentials.
+ */
 public class Credentials {
     private String userName;
     private String password;

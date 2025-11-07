@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a finalized purchase order created from a customer's cart,
+ * including items, total price, creation timestamp and identifiers.
+ */
 public class Order {
     private Long orderId;
     private long customerId;

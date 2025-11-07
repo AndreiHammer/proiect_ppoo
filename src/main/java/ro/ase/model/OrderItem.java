@@ -2,6 +2,10 @@ package ro.ase.model;
 
 import java.util.Objects;
 
+/**
+ * Represents a single line item in an order or cart, including product,
+ * quantity, and unit price at the time of adding.
+ */
 public class OrderItem {
     private Product product;
     private int pieces;
@@ -61,6 +65,9 @@ public class OrderItem {
                 '}';
     }
 
+    /**
+     * Builder for {@link OrderItem}.
+     */
     public static class Builder {
         private Product product;
         private int pieces;

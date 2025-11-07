@@ -13,6 +13,9 @@ import ro.ase.view.View;
 
 import java.util.List;
 
+/**
+ * CLI application controller orchestrating view interactions and service calls.
+ */
 public class App {
     private final ProductDataStore dataStore;
     private final StoreService storeService;
@@ -25,6 +28,7 @@ public class App {
         this.view = new CLIView();
     }
 
+    /** Starts the application lifecycle. */
     public void run() {
         dataStore.init();
 
@@ -36,6 +40,7 @@ public class App {
         }
     }
 
+    /** Prompts for credentials and authenticates the customer. */
     private Customer authenticateCustomer() throws AuthenticationException {
         Credentials credentials = view.readCredentials();
         Customer customer = storeService.authenticate(credentials);
@@ -43,6 +48,7 @@ public class App {
         return customer;
     }
 
+    /** Main event loop processing user menu selections. */
     private void mainMenuLoop() {
         boolean running = true;
         
@@ -88,11 +94,13 @@ public class App {
         }
     }
 
+    /** Displays all products. */
     private void handleViewAllProducts() {
         List<Product> products = storeService.listAllProducts();
         view.printAllProducts(products);
     }
 
+    /** Asks for a term and shows filtered products. */
     private void handleSearchProducts() {
         String searchTerm = view.readSearchTerm();
         if (searchTerm.isEmpty()) {
@@ -105,11 +113,13 @@ public class App {
         view.printProducts(products);
     }
 
+    /** Displays current cart. */
     private void handleViewCart() {
         var cart = storeService.getCart(currentCustomer);
         view.printCart(cart);
     }
 
+    /** Adds a product to the cart with a chosen quantity. */
     private void handleAddToCart() {
         view.printMessage("\nFirst, let's see what products are available:");
         List<Product> products = storeService.listAllProducts();
@@ -135,6 +145,7 @@ public class App {
         }
     }
 
+    /** Removes a product from the cart by id. */
     private void handleRemoveFromCart() {
         var cart = storeService.getCart(currentCustomer);
         
@@ -160,6 +171,7 @@ public class App {
         }
     }
 
+    /** Updates the quantity of a product already in the cart. */
     private void handleUpdateCartQuantity() {
         var cart = storeService.getCart(currentCustomer);
         
@@ -191,6 +203,7 @@ public class App {
         }
     }
 
+    /** Clears all items from the current cart. */
     private void handleClearCart() {
         try {
             storeService.clearCart(currentCustomer);
@@ -200,6 +213,7 @@ public class App {
         }
     }
 
+    /** Places an order from the current cart after confirmation. */
     private void handleCheckout() {
         var cart = storeService.getCart(currentCustomer);
         
@@ -221,6 +235,7 @@ public class App {
         }
     }
 
+    /** Displays the customer's order history. */
     private void handleViewOrderHistory() {
         List<Order> orders = storeService.getOrderHistory(currentCustomer);
         view.printOrderHistory(orders);
