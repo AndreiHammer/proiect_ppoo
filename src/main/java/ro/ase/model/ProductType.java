@@ -1,24 +1,18 @@
 package ro.ase.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * Enumerates product categories supported by the store.
  */
+@AllArgsConstructor
+@Getter
 public enum ProductType {
     DEVICE("device"),
     ACCESORY("accesory");
 
     private final String type;
-
-    ProductType(String type) {
-        this.type = type;
-    }
-
-    /**
-     * @return the string representation of the type
-     */
-    public String getType() {
-        return type;
-    }
 
     /**
      * Parses a string into a {@link ProductType} value (case-insensitive).

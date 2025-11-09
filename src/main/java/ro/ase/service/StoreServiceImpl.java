@@ -8,6 +8,7 @@ import ro.ase.model.Product;
 import ro.ase.model.Cart;
 import ro.ase.model.OrderItem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -152,6 +153,7 @@ public class StoreServiceImpl implements StoreService {
         }
 
         Order order = new Order(customer);
+        order.setOrderItems(new ArrayList<>(cart.getOrderItems()));
         order = dataStore.createOrder(order);
 
         clearCart(customer);
